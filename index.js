@@ -5,6 +5,7 @@ const { TodoListUser, Task } = require('./models/users');
 
 
 const port = 3001
+
 // express  app
 const app = express();
 
@@ -60,7 +61,6 @@ app.post('/signup', (req, res) => {
       })
       .catch((err) => {
         console.log(err);
-        // Handle any error that occurs during saving the user or task
-        // Redirect or display an error message to the user
+
       });
   });
