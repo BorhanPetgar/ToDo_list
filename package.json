@@ -22,5 +22,8 @@
     "mongoose": "^8.1.1",
     "morgan": "^1.10.0",
     "nodemon": "^3.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.11"
   }
 }

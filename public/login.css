@@ -6,15 +6,15 @@
   font-family: 'Poppins', sans-serif;
 }
 html,body{
-    background-image: url("../../assets/background.jpg");
-    background-repeat: no-repeat;
-    background-size: cover;
-    display: grid;
-    height: 100%;
-    width: 100%;
-    place-items: center;
-    background-color: rgba(0, 0, 0, 0.5); /* Set a transparent black background */
-    backdrop-filter: blur(10px); /* Apply a blur effect to the background */
+  background-image: url("background.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: grid;
+  height: 100%;
+  width: 100%;
+  place-items: center;
+  background-color: rgba(0, 0, 0, 0.5); /* Set a transparent black background */
+  backdrop-filter: blur(10px); /* Apply a blur effect to the background */
   }
 ::selection{
   background: #4158d0;
@@ -63,7 +63,7 @@ html,body{
 }
 .wrapper form .field input:focus,
 form .field input:valid{
-  border-color: #4158d0;
+  border-color: #888888;
 }
 .wrapper form .field label{
   position: absolute;
@@ -75,14 +75,16 @@ form .field input:valid{
   pointer-events: none;
   transform: translateY(-50%);
   transition: all 0.3s ease;
+  background-color: transparent
 }
 form .field input:focus ~ label,
 form .field input:valid ~ label{
   top: 0%;
   font-size: 16px;
-  color: #4158d0;
+  color: #ffffff;
   background: #ffffff;
   transform: translateY(-50%);
+  background-color: transparent
 }
 form .content{
   display: flex;
