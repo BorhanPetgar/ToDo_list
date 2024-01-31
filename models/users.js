@@ -14,6 +14,18 @@ const taskSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'TodoListUser',
   },
+  category: {
+    type: String,
+    required: true
+  },
+  date: {
+      type: Date,
+      required: true
+  },
+  priority: {
+    type: String,
+    required: true
+  },
 });
 
 // Define the Todo List Users schema

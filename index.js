@@ -111,7 +111,10 @@ app.post('/login', (req, res) => {
         }
 
         // Redirect the user to the todo page after successful login
-        res.redirect('/todo');
+        res.render('todo', {
+            tittle: "Home"
+            // task: task
+        });
     })
     .catch((err) => {
         console.log(err);
