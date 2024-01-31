@@ -33,21 +33,8 @@ const taskSchema = new mongoose.Schema({
     },
 });
 
-// Define the Todo List Users schema
-const todoListUserSchema = new mongoose.Schema({
-    username: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: true,
-    },
-});
 
 // Create the model for the Todo List Users schema
-const TodoListUser = mongoose.model('TodoListUser', todoListUserSchema);
 const Task = mongoose.model('Task', taskSchema);
 
-module.exports = { TodoListUser, Task };
+module.exports = {Task};
