@@ -1,11 +1,14 @@
 @import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
-*{
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: 'Poppins', sans-serif;
 }
-html,body{
+
+html,
+body {
   background-image: url("background.jpg");
   background-repeat: no-repeat;
   background-size: cover;
@@ -13,23 +16,30 @@ html,body{
   height: 100%;
   width: 100%;
   place-items: center;
-  background-color: rgba(0, 0, 0, 0.5); /* Set a transparent black background */
-  backdrop-filter: blur(10px); /* Apply a blur effect to the background */
-  }
-::selection{
+  background-color: rgba(0, 0, 0, 0.5);
+  /* Set a transparent black background */
+  backdrop-filter: blur(10px);
+  /* Apply a blur effect to the background */
+}
+
+::selection {
   background: #4158d0;
   color: #fff;
 }
-.wrapper{
+
+.wrapper {
   width: 380px;
   /* background: #fff; */
-  background: rgba(255, 255, 255, 0); /* Set a transparent white background */
-  backdrop-filter: blur(10px); /* Apply a blur effect to the background */
+  background: rgba(255, 255, 255, 0);
+  /* Set a transparent white background */
+  backdrop-filter: blur(10px);
+  /* Apply a blur effect to the background */
   border-radius: 15px;
-  box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.1);
   border: solid rgb(146, 146, 146) 1px;
 }
-.wrapper .title{
+
+.wrapper .title {
   font-size: 35px;
   font-weight: 600;
   text-align: center;
@@ -39,18 +49,22 @@ html,body{
   /* border-radius: 15px 15px 0 0; */
   border-radius: 15px 15px 15px 15px;
   /* background: linear-gradient(-135deg, #c850c0, #4158d0); */
-  background-color: transparent; /* Set the background color to transparent */
+  background-color: transparent;
+  /* Set the background color to transparent */
 }
-.wrapper form{
+
+.wrapper form {
   padding: 10px 30px 50px 30px;
 }
-.wrapper form .field{
+
+.wrapper form .field {
   height: 50px;
   width: 100%;
   margin-top: 20px;
   position: relative;
 }
-.wrapper form .field input{
+
+.wrapper form .field input {
   height: 100%;
   width: 100%;
   outline: none;
@@ -59,13 +73,16 @@ html,body{
   border: 1px solid #999999;
   border-radius: 25px;
   transition: all 0.3s ease;
-  background-color: transparent; /* Set the background color to transparent */
+  background-color: transparent;
+  /* Set the background color to transparent */
 }
+
 .wrapper form .field input:focus,
-form .field input:valid{
+form .field input:valid {
   border-color: #888888;
 }
-.wrapper form .field label{
+
+.wrapper form .field label {
   position: absolute;
   top: 50%;
   left: 20px;
@@ -77,8 +94,9 @@ form .field input:valid{
   transition: all 0.3s ease;
   background-color: transparent
 }
-form .field input:focus ~ label,
-form .field input:valid ~ label{
+
+form .field input:focus~label,
+form .field input:valid~label {
   top: 0%;
   font-size: 16px;
   color: #ffffff;
@@ -86,7 +104,8 @@ form .field input:valid ~ label{
   transform: translateY(-50%);
   background-color: transparent
 }
-form .content{
+
+form .content {
   display: flex;
   width: 100%;
   height: 50px;
@@ -94,25 +113,30 @@ form .content{
   align-items: center;
   justify-content: space-around;
 }
-form .content .checkbox{
+
+form .content .checkbox {
   display: flex;
   align-items: center;
   justify-content: center;
 }
-form .content input{
+
+form .content input {
   width: 15px;
   height: 15px;
   background: red;
 }
-form .content label{
+
+form .content label {
   color: #ffffff;
   user-select: none;
   padding-left: 5px;
 }
-form .content .pass-link{
+
+form .content .pass-link {
   color: "";
 }
-form .field input[type="submit"]{
+
+form .field input[type="submit"] {
   color: #ffffff;
   border: none;
   padding-left: 0;
@@ -124,20 +148,104 @@ form .field input[type="submit"]{
   background: linear-gradient(-135deg, #c77f8b, #15245b);
   transition: all 0.3s ease;
 }
-form .field input[type="submit"]:active{
+
+form .field input[type="submit"]:active {
   transform: scale(0.95);
 }
-form .signup-link{
+
+form .signup-link {
   color: #262626;
   margin-top: 20px;
   text-align: center;
 }
+
 form .pass-link a,
-form .signup-link a{
+form .signup-link a {
   color: #ffffff;
   text-decoration: none;
 }
+
 form .pass-link a:hover,
-form .signup-link a:hover{
+form .signup-link a:hover {
   text-decoration: underline;
+}
+
+.table {
+  padding: 20px;
+  border: 1px solid #999999;
+  border-radius: 25px;
+  backdrop-filter: blur(10px);
+  /* Apply a blur effect to the background */
+}
+
+.container {
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+  padding: 10px;
+  width: 500px;
+}
+
+.container h1 {
+  margin-top: 0;
+  font-family: 'Poppins', sans-serif
+}
+
+.container table {
+  margin: 20px auto;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.container table th,
+.container table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.container table th {
+  background-color: #f2f2f2;
+}
+
+.container input[type="text"],
+.container select,
+.container input[type="date"],
+.container input[type="submit"] {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.container input[type="submit"] {
+  background-color: #4CAF50;
+  color: white;
+  cursor: pointer;
+}
+
+.container input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+.container input[type="checkbox"] {
+  margin-left: 8px;
+}
+
+.container div {
+  text-align: center;
+  font-family: 'Poppins', sans-serif
+}
+
+.container .btn-danger {
+  background-color: #f44336;
+  color: white;
+  cursor: pointer;
+}
+
+.container .btn-danger:hover {
+  background-color: #ff5252;
 }

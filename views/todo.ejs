@@ -7,13 +7,14 @@
 
     </title>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
     <!-- font awesome link -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
-    <link rel="stylesheet" href="./assets/style.css" </head>
-    <script src=" https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/login.css">
+</head>
+<script src=" https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
 <body>
     <section class="container">
@@ -58,7 +59,7 @@
     <div>
         <h1 align="center">TASKS LIST</h1>
 
-        <form action="/delete-task" method="GET">
+        <form action="/delete-task" method="POST" onsubmit="return confirm('Are you sure you want to delete the selected tasks?');">
             <table class="table">
                 <thead>
                     <tr>
@@ -69,11 +70,10 @@
                     </tr>
                 </thead>
                 <% for(let i of task) { %>
-
-
                     <tr>
-
-                        <td> <input type="checkbox" name="<%= i._id %>"></td>
+                        <!-- <td> <input type="checkbox" name="<%= i._id %>"></td> -->
+                        <td> <input type="checkbox" name="taskIds" value="<%= i._id %>"></td>
+                        <!-- <td> <input type="checkbox" name="taskIds" value="<%= i._id %>"></td> -->
                         <td>
                             <p id="task-description">
                                 <%= i.description %>
@@ -86,13 +86,7 @@
                             </p>
                         </td>
                     </tr>
-
-
                     <% } %>
-
-
-
-
             </table>
             <div align="center"><input type="submit" class="btn btn-danger" value="DELETE TASK">
             </div>>
