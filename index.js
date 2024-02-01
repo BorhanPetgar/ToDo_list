@@ -62,38 +62,6 @@ app.get('/signup', (req, res) => {
 
 })
 
-// app.post('/signup', (req, res) => {
-//     const { username, password } = req.body;
-
-//     // Check if the username already exists
-//     Task.findOne({ username })
-//         .then((existingUser) => {
-//             if (existingUser) {
-//                 // Display an error message if the username is already taken
-//                 console.log('Username is already taken');
-//                 return res.render('signup', { error: 'Username is already taken' });
-//             }
-
-//             // Create a new todo list user instance
-//             const user = new Task({
-//                 username,
-//                 password,
-//             });
-
-//             // Save the user to the database
-//             console.log(req.body);
-//             return user.save();
-
-//         })
-//         .then(() => {
-//             res.redirect('/');
-//         })
-//         .catch((err) => {
-//             console.log(err);
-
-//         });
-// });
-
 app.post('/signup', (req, res) => {
     const { username, password } = req.body;
 
@@ -157,109 +125,8 @@ app.post('/login', (req, res) => {
         });
 });
 
-// app.post('/create-task', (req, res) => {
-//     console.log(req.body);
-//     const username = req.session.username;
-//     const password = req.session.password;
-
-//     const { description, category, date } = req.body;
-
-//     Task.create({
-//         description: req.body.description,
-//         category: req.body.category,
-//         date: req.body.date
-//     })
-//         .then((newtask) => {
-//             console.log(newtask);
-//         })
-//         .catch((err) => {
-//             console.log('error in creating task', err);
-//             return res.status(500).json({ error: 'An error occurred while creating the task' });
-//         });
-// });
-
-
-// app.post('/create-task', (req, res) => {
-//     const { description, category, date } = req.body;
-
-//     // Retrieve the username from the session
-//     const username = req.session.username;
-//     const password = req.session.password;
-
-//     // Find the user based on the username
-//     Task.findOne({ username, password })
-//       .then((user) => {
-//         if (!user) {
-//           return res.status(404).json({ error: 'User not found' });
-//         }
-
-//         // Create a new task and add it to the user's tasks array
-//         const newTask = new Task({
-//           description: description,
-//           category: category,
-//           date: date,
-//         });
-
-//         user.tasks.push(newTask);
-
-//         // Save the updated user document
-//         return user.save();
-//       })
-//       .then(() => {
-//         console.log('Task created successfully');
-//         res.redirect('/todo');
-//       })
-//       .catch((err) => {
-//         console.log('Error creating task:', err);
-//         return res.status(500).json({ error: 'An error occurred while creating the task' });
-//       });
-//   });
-
-// app.post('/create-task', (req, res) => {
-//     const { description, category, date } = req.body;
-
-//     // Retrieve the username from the session
-//     const username = req.session.username;
-//     console.log(`(Before) User = ${username}`);
-
-//     // Find the user based on the username
-//     User.findOne({ username })
-//         .then((user) => {
-//             if (!user) {
-//                 return res.status(404).json({ error: 'User not found' });
-//             }
-//             console.log(`User = ${user}`);
-//             // Create a new task and add it to the user's tasks array
-//             const newTask = new Task({
-//                 username: username, // Make sure to include the username field
-//                 description: description,
-//                 category: category,
-//                 date: date,
-//             });
-
-//             user.tasks.push(newTask);
-
-//             // Save the updated user document
-//             return user.save();
-//         })
-//         .then(() => {
-//             console.log('Task created successfully');
-//             // res.redirect('/todo');
-//             User.find()
-//                 .then((task) =>
-//                     res.render('todo', {
-//                         tittle: "Home",
-//                         task: task
-//                     })
-//                 )
-//         })
-//         .catch((err) => {
-//             console.log('Error creating task:', err);
-//             return res.status(500).json({ error: 'An error occurred while creating the task' });
-//         });
-// });
 app.post('/create-task', (req, res) => {
-    const { description, category, date } = req.body;
+    const { description, category, date, priority } = req.body;
 
     // Retrieve the username from the session
     const username = req.session.username;
@@ -278,6 +145,7 @@ app.post('/create-task', (req, res) => {
                 description: description,
                 category: category,
                 date: date,
+                priority: priority
             });
 
             user.tasks.push(newTask);
@@ -309,48 +177,58 @@ app.post('/create-task', (req, res) => {
             return res.status(500).json({ error: 'An error occurred while creating the task' });
         });
 });
-// deleting Tasks
+
 // app.get('/delete-task', async (req, res) => {
 //     try {
 //         const ids = Object.keys(req.query);
+//         console.log(ids);
 
 //         for (let i = 0; i < ids.length; i++) {
 //             await Task.findByIdAndDelete(ids[i]);
 //         }
 //         res.redirect('/todo');
-//         //   return res.redirect('back');
 //     } catch (err) {
-//         console.log('error in deleting task', err);
+//         console.log(err);
 //         return res.status(500).json({ error: 'An error occurred while deleting the task' });
 //     }
 // });
-// app.get('/delete-task', async (req, res) => {
-//     try {
-//         const ids = Object.keys(req.query);
 
-//         await Task.deleteMany({ _id: { $in: ids } });
+app.delete('/delete-task', (req, res) => {
+    const id = req.params.id;
+    console.log(id);
 
-//         // Redirect to the home page or any other desired page after deleting the tasks
-//         res.redirect('/todo');
-//     } catch (err) {
-//         console.log('error in deleting task', err);
-//         return res.status(500).json({ error: 'An error occurred while deleting the task' });
-//     }
-// });
-app.post('/delete-task', async (req, res) => {
-    try {
-        const taskIds = req.body.taskIds;
-        console.log(`********** ${taskIds}`);
-        // await Task.findByIdAndDelete(taskIds);
-        await Task.deleteMany({ _id: { $in: taskIds } });
-
-        console.log(taskIds);
-
-
-        // Redirect to the home page or any other desired page after deleting the tasks
-        res.redirect('/todo');
-    } catch (err) {
-        console.log('error in deleting task', err);
-        return res.status(500).json({ error: 'An error occurred while deleting the task' });
-    }
+    Task.findByIdAndDelete(id)
+        .then(result => {
+            res.json({ redirect: '/todo' });
+        })
+        .catch(err => {
+            console.log(err);
+        });
 });
+
+app.get('/edit-task', (req, res) => { 
+    const taskId = req.query.id; 
+   
+    Task.findById(taskId) 
+      .then((task) => { 
+        res.render('edit-task', { task: task }); 
+      }) 
+      .catch((err) => { 
+        console.log('error in finding task', err); 
+        return res.status(500).json({ error: 'An error occurred while finding the task' }); 
+      }); 
+  }); 
+
+  app.post('/update-task', (req, res) => { 
+    const taskId = req.body.id; 
+    const { description, category, date } = req.body; 
+   
+    Task.findByIdAndUpdate(taskId, { description, category, date }) 
+      .then((task) => { 
+        res.redirect('/todo'); 
+      }) 
+      .catch((err) => { 
+        console.log('error in updating task', err); 
+        return res.status(500).json({ error: 'An error occurred while updating the task' }); 
+      }); 
+  }); 

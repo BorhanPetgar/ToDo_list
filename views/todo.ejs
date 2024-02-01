@@ -1,78 +1,129 @@
 <html>
 
 <head>
-    <title>
+    <title>TODO App</title>
+    <style>
+        .completed-task {
+            text-decoration: line-through;
+        }
 
-        <%= tittle %>
+        .checkbox input {
+            opacity: 0;
+            position: absolute;
+            pointer-events: none;
+        }
 
-    </title>
+        .checkbox .checkmark {
+            position: relative;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ccc;
+            border-radius: 3px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
 
-    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"> -->
-    <!-- font awesome link -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
+        .checkbox input:checked~.checkmark:after {
+            content: "";
+            display: block;
+            position: absolute;
+            left: 6px;
+            top: 2px;
+            width: 5px;
+            height: 10px;
+            border: solid #000;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .delete-button {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+
+
+        .delete-button::after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+    </style>
     <link rel="stylesheet" href="/login.css">
+    <script></script>
 </head>
-<script src=" https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 
 <body>
-    <section class="container">
-        <h1 align="center">TODO APP</h1>
+    <section>
+        <h1 align="center">TODO App</h1>
 
-        <!-- form to create task -->
-        <form action="/create-task" method="POST">
-
-            <table class="table">
+        <!-- Form to create a task -->
+        <form class="task-form" method="POST" action="/create-task">
+            <table>
                 <thead>
-                    <tr class="table-active">
+                    <tr>
                         <th>Add Task</th>
-                        <th>category</th>
-                        <th>date</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Priority</th>
+                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
-
-
                 <tbody>
                     <tr>
-                        <td> <input type="text" name="description" placeholder="What do you need to do?"
-                                required></input></th>
-                        <td> <select name="category" required>
-
+                        <td><input type="text" name="description" placeholder="What do you need to do?" required></td>
+                        <td>
+                            <select name="category" required>
                                 <option>PERSONAL</option>
                                 <option>WORK</option>
                                 <option>SCHOOL</option>
-                                <option>CLEANING</option>
+                                <option>HOME</option>
                                 <option>OTHER</option>
-
-                            </select></th>
-                        <td> <input type="date" name="date" required></th>
-                        <td><input type="submit" class="btn btn-success" id="add" value="ADD TASK"></th>
+                            </select>
+                        </td>
+                        <td><input type="date" name="date" required></td>
+                        <td>
+                            <select name="priority" required>
+                                <option>HIGH</option>
+                                <option>MEDIUM</option>
+                                <option>LOW</option>
+                            </select>
+                        </td>
+                        <td><input type="submit" value="ADD TASK"></td>
                     </tr>
                 </tbody>
-
             </table>
-
         </form>
     </section>
     <div>
         <h1 align="center">TASKS LIST</h1>
-
-        <form action="/delete-task" method="POST" onsubmit="return confirm('Are you sure you want to delete the selected tasks?');">
-            <table class="table">
+        <form class="task-form" method="POST" action="/delete-task">
+            <table>
                 <thead>
                     <tr>
                         <th>Select</th>
                         <th>Task</th>
                         <th>Category</th>
-                        <th>due date</th>
+                        <th>Deadline</th>
+                        <th>Priority</th>
+                        <th></th>
                     </tr>
                 </thead>
+
                 <% for(let i of task) { %>
-                    <tr>
-                        <!-- <td> <input type="checkbox" name="<%= i._id %>"></td> -->
-                        <td> <input type="checkbox" name="taskIds" value="<%= i._id %>"></td>
+
+                    <tr draggable="true" ondragstart="start()" ondragover="dragover()">
+                       
+
+                        <td>
+                            <form action="/delete-task" method="DELETE">
+                                <input type="checkbox" name="taskIds" value="<%= i._id %>"
+                                    onchange="toggleTaskCompletion(this)">
+                        </td>
                         <!-- <td> <input type="checkbox" name="taskIds" value="<%= i._id %>"></td> -->
                         <td>
                             <p id="task-description">
@@ -85,15 +136,76 @@
                             <p id="due-date">: <%= i.date %>
                             </p>
                         </td>
+                        <td>
+                            <p id="task-priority">: <%= i.priority %>
+                            </p>
+                        </td>
+                        <td>
+                            <button class="delete-button" onclick="deleteTask(this)" data-doc="<%= i._id %>">❌</button>
+                        </td>
+
                     </tr>
                     <% } %>
+
+
+
             </table>
-            <div align="center"><input type="submit" class="btn btn-danger" value="DELETE TASK">
-            </div>>
+            <div align="center">
+                <input type="submit" value="DELETE SELECTED TASKS">
+            </div>
         </form>
-
-
     </div>
+
+    <script>
+        var row;
+        var startY;
+
+        function start() {
+            row = event.target;
+            startY = event.clientY;
+        }
+
+        function dragover() {
+            var e = event;
+            e.preventDefault();
+          
+            let targetRow = e.target.closest('tr');
+            let targetRowIndex = Array.from(targetRow.parentNode.children).indexOf(targetRow);
+            let draggedRowIndex = Array.from(row.parentNode.children).indexOf(row);
+          
+            if (Math.abs(event.clientY - startY) < 10 || targetRow === row || !targetRow) {
+              return;
+            }
+          
+            if (targetRowIndex > draggedRowIndex) {
+              targetRow.after(row);
+            } else {
+              targetRow.before(row);
+            }
+          }
+
+        function toggleTaskCompletion(checkbox) {
+            var row = checkbox.parentNode.parentNode;
+            row.classList.toggle("completed-task");
+        }
+
+        function deleteTask(button) {
+            console.log(button.dataset);
+            console.log('hi');
+            const endpoint = `/todo/${button.dataset.doc}`; 
+ 
+            fetch(endpoint, { 
+                method: 'DELETE', 
+            }) 
+            .then(response => response.json()) 
+            .then(data => window.location.href = data.redirect) 
+            .catch(err => console.log(err)); 
+
+            var row = button.parentNode.parentNode;
+            console.log(row);
+            row.parentNode.removeChild(row);
+        }
+    </script>
 </body>
 
 </html>
