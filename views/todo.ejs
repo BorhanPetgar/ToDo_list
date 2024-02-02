@@ -2,6 +2,7 @@
 
 <head>
     <title>TODO App</title>
+    <!-- <link rel="icon" type="image/x-icon" href="/todo-icon.png"> -->
     <style>
         .completed-task {
             text-decoration: line-through;
@@ -75,25 +76,26 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" name="description" placeholder="What do you need to do?" required></td>
+                        <td><input class="text-" type="text" name="description" placeholder="What do you need to do?"
+                                required></td>
                         <td>
-                            <select name="category" required>
-                                <option>PERSONAL</option>
-                                <option>WORK</option>
-                                <option>SCHOOL</option>
-                                <option>HOME</option>
-                                <option>OTHER</option>
+                            <select class="fill-form" name="category" required>
+                                <option class="prio">PERSONAL</option>
+                                <option class="prio">WORK</option>
+                                <option class="prio">SCHOOL</option>
+                                <option class="prio">HOME</option>
+                                <option class="prio">OTHER</option>
                             </select>
                         </td>
-                        <td><input type="date" name="date" required></td>
+                        <td><input class="fill-form" type="date" name="date" required></td>
                         <td>
-                            <select name="priority" required>
-                                <option>HIGH</option>
-                                <option>MEDIUM</option>
-                                <option>LOW</option>
+                            <select class="fill-form" name="priority" required>
+                                <option class="high-priority">HIGH</option>
+                                <option class="medium-priority">MEDIUM</option>
+                                <option class="low-priority">LOW</option>
                             </select>
                         </td>
-                        <td><input type="submit" value="ADD TASK"></td>
+                        <td><input class="fill-form" type="submit" value="ADD TASK"></td>
                     </tr>
                 </tbody>
             </table>
@@ -101,110 +103,206 @@
     </section>
     <div>
         <h1 align="center">TASKS LIST</h1>
-        <form class="task-form" method="POST" action="/delete-task">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Select</th>
-                        <th>Task</th>
-                        <th>Category</th>
-                        <th>Deadline</th>
-                        <th>Priority</th>
-                        <th></th>
-                    </tr>
-                </thead>
+        <div>
+            <form class="task-form">
 
-                <% for(let i of task) { %>
+                <table>
+                    <% if (task.length> 0) { %>
+                        <thead>
+                            <tr>
+                                <th>Done</th>
+                                <th>Task</th>
+                                <th>Category</th>
+                                <th>Deadline</th>
+                                <th>Priority</th>
+                                <th></th>
+                            </tr>
+                        </thead>
 
-                    <tr draggable="true" ondragstart="start()" ondragover="dragover()">
-                       
+                        <% for(let i of task) { %>
 
-                        <td>
-                            <form action="/delete-task" method="DELETE">
-                                <input type="checkbox" name="taskIds" value="<%= i._id %>"
-                                    onchange="toggleTaskCompletion(this)">
-                        </td>
-                        <!-- <td> <input type="checkbox" name="taskIds" value="<%= i._id %>"></td> -->
-                        <td>
-                            <p id="task-description">
-                                <%= i.description %>
-                        </td>
-                        <td>
-                            <p id="task-category"></p>: <%= i.category %>
-                        </td>
-                        <td>
-                            <p id="due-date">: <%= i.date %>
-                            </p>
-                        </td>
-                        <td>
-                            <p id="task-priority">: <%= i.priority %>
-                            </p>
-                        </td>
-                        <td>
-                            <button class="delete-button" onclick="deleteTask(this)" data-doc="<%= i._id %>">❌</button>
-                        </td>
-
-                    </tr>
-                    <% } %>
+                            <tr draggable="true" ondragstart="start()" ondragover="dragover()">
 
 
+                                <td>
 
-            </table>
-            <div align="center">
-                <input type="submit" value="DELETE SELECTED TASKS">
-            </div>
-        </form>
+                                    <input class="tick" type="checkbox" name="taskIds" value="<%= i._id %>"
+                                        id="task-<%= i._id %>"
+                                        onchange="toggleTaskCompletion(this, '<%= i._id %>', '<%= username %>')"
+                                        <%=i.complete ? 'checked' : '' %>
+
+                                </td>
+                                <!-- <td> <input type="checkbox" name="taskIds" value="<%= i._id %>"></td> -->
+                                <td>
+                                    <p id="task-description">
+                                        <%= i.description %>
+                                </td>
+                                <td>
+                                    <p id="task-category"></p>: <%= i.category %>
+                                </td>
+                                <td>
+                                    <p id="due-date">: <%= i.date %>
+                                    </p>
+                                </td>
+                                <td>
+                                    <p id="task-priority">: <%= i.priority %>
+                                    </p>
+                                </td>
+                                <td>
+                                    <!-- <form action="/delete-task" method="D"> -->
+                                    <button class="delete-button"
+                                        onclick="deleteTask(this, '<%= i._id %>', '<%= username %>')"
+                                        data-doc="<%= i._id %>">❌</button>
+                                    <!-- </form> -->
+
+                                </td>
+
+                            </tr>
+                            <% } } else {%>
+
+
+                                <tr>
+                                    <td colspan="6" align="center">No tasks to display.</td>
+                                </tr>
+
+                                <% } %>
+
+
+
+                </table>
+
+
+            </form>
+        </div>
+        <div align="center">
+            <input id="completed-tasks-history" type="submit" value="COMPLETED TASKS"
+                onclick="fetchCompletedTasks('<%= username %>')">
+        </div>
+
     </div>
 
     <script>
+
+
+
         var row;
         var startY;
 
         function start() {
             row = event.target;
             startY = event.clientY;
+            console.log('###########3');
         }
 
         function dragover() {
             var e = event;
             e.preventDefault();
-          
+
             let targetRow = e.target.closest('tr');
             let targetRowIndex = Array.from(targetRow.parentNode.children).indexOf(targetRow);
             let draggedRowIndex = Array.from(row.parentNode.children).indexOf(row);
-          
-            if (Math.abs(event.clientY - startY) < 10 || targetRow === row || !targetRow) {
-              return;
-            }
-          
-            if (targetRowIndex > draggedRowIndex) {
-              targetRow.after(row);
-            } else {
-              targetRow.before(row);
-            }
-          }
 
-        function toggleTaskCompletion(checkbox) {
-            var row = checkbox.parentNode.parentNode;
-            row.classList.toggle("completed-task");
+            if (Math.abs(event.clientY - startY) < 10 || targetRow === row || !targetRow) {
+                return;
+            }
+
+            if (targetRowIndex > draggedRowIndex) {
+                targetRow.after(row);
+            } else {
+                targetRow.before(row);
+            }
         }
 
-        function deleteTask(button) {
-            console.log(button.dataset);
+        function toggleTaskCompletion(checkbox, taskId, username) {
+
+            const complete = checkbox.checked;
+
+            const requestOptions = {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'username': username
+                },
+                body: JSON.stringify({ complete: complete })
+            };
+
+            fetch(`/complete-task/${taskId}`, requestOptions)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update task');
+                    }
+                    console.log('Task updated successfully');
+
+                })
+                .catch(error => {
+                    console.error('Error updating task:', error);
+
+                });
+        }
+
+        function deleteTask(button, id, username) {
+
             console.log('hi');
-            const endpoint = `/todo/${button.dataset.doc}`; 
- 
-            fetch(endpoint, { 
-                method: 'DELETE', 
-            }) 
-            .then(response => response.json()) 
-            .then(data => window.location.href = data.redirect) 
-            .catch(err => console.log(err)); 
+            const endpoint = `/delete-task/${id}`
+
+            fetch(endpoint, {
+                method: 'DELETE',
+                headers: { "username": username }
+            })
+                .then((response) => {
+                    if (response.ok) {
+
+                        location.reload();
+                        fetch(`/todo/${username}`)
+                            .then((response) => response.json())
+                            .then((data) => {
+                                console.log(data);
+
+                            })
+                            .catch((error) => {
+
+                            });
+                    } else {
+
+                    }
+                })
+                .catch((error) => {
+
+                });
+
 
             var row = button.parentNode.parentNode;
             console.log(row);
             row.parentNode.removeChild(row);
         }
+
+        function fetchCompletedTasks() {
+            const completedTasksList = document.getElementById('completed-tasks-list');
+
+
+            fetch(`/completed-tasks-list/${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.tasks && data.tasks.length > 0) {
+                        completedTasksList.innerHTML = '';
+
+
+                        data.tasks.forEach(task => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = task.description;
+                            completedTasksList.appendChild(listItem);
+                        });
+                    } else {
+                        // Handle case when no completed tasks are found
+                        completedTasksList.innerHTML = '<li>No completed tasks found.</li>';
+                    }
+                })
+                .catch(error => {
+                    // Handle error case
+                    completedTasksList.innerHTML = '<li>Error occurred while fetching completed tasks.</li>';
+                });
+        }
+
     </script>
 </body>
 

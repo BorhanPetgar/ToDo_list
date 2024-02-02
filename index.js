@@ -17,6 +17,8 @@ const db = 'mongodb+srv://borhan:12345@cluster0.jtvwzaf.mongodb.net/?retryWrites
 app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
+app.use(express.static('assets'));
+app.use(express.json());
 app.use(morgan('dev'))
 app.use(express.urlencoded({ extended: false }))
 app.use(session({
@@ -38,7 +40,9 @@ app.get('/', (req, res) => {
     res.render('login')
 })
 
-app.get('/todo', (req, res) => {
+
+
+app.get('/todo/:username', (req, res) => {
     // res.render('todo');
     const username = req.session.username;
     User.find({ username }) // Find the user by username
@@ -48,7 +52,8 @@ app.get('/todo', (req, res) => {
             // Render the `todo` view with the updated task list
             res.render('todo', {
                 tittle: "Home",
-                task: task
+                task: task,
+                username: username
             });
         })
         .catch((err) => {
@@ -112,13 +117,14 @@ app.post('/login', (req, res) => {
             req.session.password = password;
 
 
-            User.find()
-                .then((task) =>
-                    res.render('todo', {
-                        tittle: "Home",
-                        task: task
-                    })
-                )
+            // User.find()
+            //     .then((task) =>
+            //         res.render('todo', {
+            //             tittle: "Home",
+            //             task: task
+            //         })
+            //     )
+            res.redirect(`/todo/${username}`)
         })
         .catch((err) => {
             console.log(err);
@@ -127,9 +133,9 @@ app.post('/login', (req, res) => {
 
 app.post('/create-task', (req, res) => {
     const { description, category, date, priority } = req.body;
-
     // Retrieve the username from the session
     const username = req.session.username;
+
     console.log(`(Before) User = ${username}`);
 
     // Find the user based on the username
@@ -157,20 +163,21 @@ app.post('/create-task', (req, res) => {
             console.log('Task created successfully');
 
             // Retrieve the updated task list for the user
-            User.find({ username }) // Find the user by username
-                .then((user) => {
-                    const task = user[0].tasks; // Retrieve the tasks array from the user
+            res.redirect(`/todo/${username}`)
+            // User.find({ username }) // Find the user by username
+            //     .then((user) => {
+            //         const task = user[0].tasks; // Retrieve the tasks array from the user
 
-                    // Render the `todo` view with the updated task list
-                    res.render('todo', {
-                        tittle: "Home",
-                        task: task
-                    });
-                })
-                .catch((err) => {
-                    console.log('Error retrieving task:', err);
-                    return res.status(500).json({ error: 'An error occurred while retrieving the task' });
-                });
+            //         // Render the `todo` view with the updated task list
+            //         res.render('todo', {
+            //             tittle: "Home",
+            //             task: task
+            //         });
+            //     })
+            // .catch((err) => {
+            //     console.log('Error retrieving task:', err);
+            //     return res.status(500).json({ error: 'An error occurred while retrieving the task' });
+            // });
         })
         .catch((err) => {
             console.log('Error creating task:', err);
@@ -178,57 +185,127 @@ app.post('/create-task', (req, res) => {
         });
 });
 
-// app.get('/delete-task', async (req, res) => {
-//     try {
-//         const ids = Object.keys(req.query);
-//         console.log(ids);
-
-//         for (let i = 0; i < ids.length; i++) {
-//             await Task.findByIdAndDelete(ids[i]);
-//         }
-//         res.redirect('/todo');
-//     } catch (err) {
-//         console.log(err);
-//         return res.status(500).json({ error: 'An error occurred while deleting the task' });
-//     }
-// });
-
-app.delete('/delete-task', (req, res) => {
+app.delete('/delete-task/:id', (req, res) => {
     const id = req.params.id;
-    console.log(id);
+    const username = req.headers.username;
 
-    Task.findByIdAndDelete(id)
-        .then(result => {
-            res.json({ redirect: '/todo' });
+    // Define an async function to handle the deletion
+    const deleteTask = async () => {
+        try {
+            // Find the user by username
+            const user = await User.findOne({ username });
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            // Find the index of the task in the tasks array
+            const taskIndex = user.tasks.findIndex(task => task._id.toString() === id);
+
+            if (taskIndex === -1) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+
+            // Remove the task from the tasks array
+            user.tasks.splice(taskIndex, 1);
+
+            // Save the updated user
+            await user.save();
+
+            res.status(200).json({ message: 'Task deleted successfully' });
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    };
+
+    // Call the async function
+    deleteTask();
+});
+
+app.get('/edit-task', (req, res) => {
+    const taskId = req.query.id;
+
+    Task.findById(taskId)
+        .then((task) => {
+            res.render('edit-task', { task: task });
         })
-        .catch(err => {
-            console.log(err);
+        .catch((err) => {
+            console.log('error in finding task', err);
+            return res.status(500).json({ error: 'An error occurred while finding the task' });
         });
 });
 
-app.get('/edit-task', (req, res) => { 
-    const taskId = req.query.id; 
-   
-    Task.findById(taskId) 
-      .then((task) => { 
-        res.render('edit-task', { task: task }); 
-      }) 
-      .catch((err) => { 
-        console.log('error in finding task', err); 
-        return res.status(500).json({ error: 'An error occurred while finding the task' }); 
-      }); 
-  }); 
 
-  app.post('/update-task', (req, res) => { 
-    const taskId = req.body.id; 
-    const { description, category, date } = req.body; 
-   
-    Task.findByIdAndUpdate(taskId, { description, category, date }) 
-      .then((task) => { 
-        res.redirect('/todo'); 
-      }) 
-      .catch((err) => { 
-        console.log('error in updating task', err); 
-        return res.status(500).json({ error: 'An error occurred while updating the task' }); 
-      }); 
-  }); 
+
+app.put('/toggle-task-completion/:id/:username', async (req, res) => {
+    const taskId = req.params.id;
+    // console.log(taskId);
+    const { complete } = req.body;
+    console.log(taskId);
+    console.log(complete);
+    try {
+        // Find the task by ID and update the complete field
+        const task = await Task.findByIdAndUpdate(taskId, { complete }, { new: true });
+
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        res.status(200).json({ message: 'Task completion status updated successfully' });
+    } catch (error) {
+        console.error('Error updating task completion status:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.patch('/complete-task/:id', (req, res) => {
+    const id = req.params.id;
+    const username = req.headers.username;
+    const complete = req.body.complete;
+
+    // Define an async function to handle the task update
+    const completeTask = async () => {
+        try {
+            // Find the user by username
+            const user = await User.findOne({ username });
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            // Find the task by id in the user's tasks array
+            const task = user.tasks.id(id);
+
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+
+            // Update the complete field of the task
+            task.complete = complete;
+
+            // Save the updated user
+            await user.save();
+
+            res.status(200).json({ message: 'Task updated successfully' });
+        } catch (error) {
+            console.error('Error updating task:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    };
+
+    // Call the async function
+    completeTask();
+});
+
+app.get('/completed-tasks-list', (req, res) => {
+    // Replace this logic with your own implementation to fetch completed tasks from the database
+    const completedTasks = [
+      { description: 'Task 1', category: 'Category 1', date: new Date(), priority: 'High' },
+      { description: 'Task 2', category: 'Category 2', date: new Date(), priority: 'Medium' },
+      { description: 'Task 3', category: 'Category 1', date: new Date(), priority: 'Low' }
+    ];
+  
+    // Send the completed tasks as a JSON response
+    res.json({ tasks: completedTasks });
+  });

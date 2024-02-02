@@ -10,7 +10,8 @@
 html,
 body {
   background-image: url("background.jpg");
-  background-repeat: no-repeat;
+  background-size: cover;
+  background-repeat: repeat;
   background-size: cover;
   display: grid;
   height: 100%;
@@ -169,9 +170,7 @@ form .pass-link a:hover,
 form .signup-link a:hover {
   text-decoration: underline;
 }
-.task-form {
-  backdrop-filter: blur(10px);
-}
+
 
 .table {
   padding: 20px;
@@ -277,7 +276,7 @@ form .signup-link a:hover {
 }
 
 /* Style the checked state */
-.checkbox input:checked ~ .checkmark:after {
+.checkbox input:checked~.checkmark:after {
   content: "";
   display: block;
   position: absolute;
@@ -289,6 +288,7 @@ form .signup-link a:hover {
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
+
 body {
   margin: 0;
 }
@@ -313,7 +313,7 @@ body {
 }
 
 .container {
-  background-color:transparent;
+  background-color: transparent;
   padding: 1rem;
   margin-top: 1rem;
 }
@@ -322,9 +322,93 @@ body {
   padding: 1rem;
 
   cursor: move;
-  height: 100px; /* Adjust the height as needed */
+  height: 100px;
+  /* Adjust the height as needed */
 }
 
 .draggable.dragging {
   opacity: .5;
+}
+
+#completed-tasks-history {
+  font-family: 'Poppins', sans-serif;
+  color: #ffffff;
+  border: none;
+  padding: 10px;
+  margin-top: -10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 25px;
+  transform: translateY(30%);
+  background: linear-gradient(-135deg, #c77f8b, #15245b);
+}
+
+.task-form {
+  backdrop-filter: blur(10px);
+  font-family: 'Poppins', sans-serif;
+
+
+}
+
+.tick {
+  cursor: pointer;
+}
+
+.fill-form {
+  /* background: linear-gradient(-135deg, #c77f8b, #15245b); */
+  background: linear-gradient(-100deg, #c77f8b, #15245b);
+  cursor: pointer;
+  border-radius: 25px;
+  font-family: 'Poppins', sans-serif;
+  padding: 10px;
+  font-size: 15px;
+  transition: box-shadow .3s;
+  color: white;
+}
+
+.fill-form:after {
+  box-shadow: 0 0 11px rgba(33, 33, 33, .2);
+}
+
+.text- {
+  cursor: text;
+  background: linear-gradient(-100deg, #c77f8b, #15245b);
+  /* cursor: pointer; */
+  border-radius: 25px;
+  font-family: 'Poppins', sans-serif;
+  padding: 10px;
+  font-size: 15px;
+  transition: box-shadow .3s;
+  color: white;
+}
+
+::placeholder {
+  color: rgb(179, 186, 216);
+  opacity: 1;
+  /* Firefox */
+}
+
+.high-priority {
+  color: red;
+  background-color: #15245b
+}
+
+.medium-priority {
+  color: orange;
+  background-color: #15245b
+}
+
+.low-priority {
+  color: rgb(5, 212, 5);
+  background-color: #15245b
+}
+
+.prio {
+  background-color: #15245b
+}
+
+.delete-button {
+  width: 30px;
+  height: 30px;
 }
