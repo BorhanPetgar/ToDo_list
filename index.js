@@ -1,11 +1,11 @@
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-// const { TodoListUser, Task } = require('./models/users');
 const { Task, User } = require('./models/usersInfo');
 const session = require('express-session');
 const flash = require('connect-flash');
 
+// const { TodoListUser, Task } = require('./models/users');
 const port = 3001
 
 // express  app
@@ -236,8 +236,6 @@ app.get('/edit-task', (req, res) => {
         });
 });
 
-
-
 app.put('/toggle-task-completion/:id/:username', async (req, res) => {
     const taskId = req.params.id;
     // console.log(taskId);
@@ -298,14 +296,8 @@ app.patch('/complete-task/:id', (req, res) => {
     completeTask();
 });
 
-app.get('/completed-tasks-list', (req, res) => {
-    // Replace this logic with your own implementation to fetch completed tasks from the database
-    const completedTasks = [
-      { description: 'Task 1', category: 'Category 1', date: new Date(), priority: 'High' },
-      { description: 'Task 2', category: 'Category 2', date: new Date(), priority: 'Medium' },
-      { description: 'Task 3', category: 'Category 1', date: new Date(), priority: 'Low' }
-    ];
-  
-    // Send the completed tasks as a JSON response
-    res.json({ tasks: completedTasks });
-  });
+
+app.post('/completed-tasks-list/:username', (req, res) => {
+    console.log(req.body, req.params.username, req.headers.username);
+    res.render('completed-list')
+});

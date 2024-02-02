@@ -177,6 +177,7 @@
         <div align="center">
             <input id="completed-tasks-history" type="submit" value="COMPLETED TASKS"
                 onclick="fetchCompletedTasks('<%= username %>')">
+            
         </div>
 
     </div>
@@ -276,31 +277,14 @@
             row.parentNode.removeChild(row);
         }
 
-        function fetchCompletedTasks() {
+        function fetchCompletedTasks(username) {
             const completedTasksList = document.getElementById('completed-tasks-list');
+            const endpoint = `/completed-tasks-list/${username}`
 
-
-            fetch(`/completed-tasks-list/${username}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.tasks && data.tasks.length > 0) {
-                        completedTasksList.innerHTML = '';
-
-
-                        data.tasks.forEach(task => {
-                            const listItem = document.createElement('li');
-                            listItem.textContent = task.description;
-                            completedTasksList.appendChild(listItem);
-                        });
-                    } else {
-                        // Handle case when no completed tasks are found
-                        completedTasksList.innerHTML = '<li>No completed tasks found.</li>';
-                    }
-                })
-                .catch(error => {
-                    // Handle error case
-                    completedTasksList.innerHTML = '<li>Error occurred while fetching completed tasks.</li>';
-                });
+            fetch(endpoint, {
+                method: 'POST',
+                headers: { "username": username }
+            })
         }
 
     </script>
