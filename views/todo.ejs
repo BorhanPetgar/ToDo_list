@@ -176,8 +176,9 @@
         </div>
         <div align="center">
             <input id="completed-tasks-history" type="submit" value="COMPLETED TASKS"
-                onclick="fetchCompletedTasks('<%= username %>')">
-            
+                onclick="goToCompletedList('<%= username %>')">
+                
+
         </div>
 
     </div>
@@ -277,14 +278,34 @@
             row.parentNode.removeChild(row);
         }
 
+        function goToCompletedList2(username) {
+            const url = '/completed-list'
+            window.location.href = url;
+        }
+
+        function goToCompletedList(username) {
+            fetch(`/completed-list/${username}`)
+                .then(response => response.json())
+                .then(data => {
+                    
+                    console.log(data);
+                   
+                })
+                .catch(error => {
+                    
+                    console.error(error);
+                });
+        }
+
         function fetchCompletedTasks(username) {
             const completedTasksList = document.getElementById('completed-tasks-list');
             const endpoint = `/completed-tasks-list/${username}`
 
             fetch(endpoint, {
-                method: 'POST',
+                method: 'GET',
                 headers: { "username": username }
             })
+                
         }
 
     </script>

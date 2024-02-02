@@ -297,7 +297,45 @@ app.patch('/complete-task/:id', (req, res) => {
 });
 
 
-app.post('/completed-tasks-list/:username', (req, res) => {
+app.get('/completed-tasks-list/:username', (req, res) => {
     console.log(req.body, req.params.username, req.headers.username);
-    res.render('completed-list')
+    res.render('completed-list');
+    console.log('next');
 });
+
+// app.get('/completed-list', (req, res) => {
+//     res.render('completed-list');
+// });
+
+app.get('/completed-list/:username', async (req, res) => {
+    try {
+        const username = req.params.username;
+        const user = await User.findOne({ username }).exec();
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const completedTasks = user.tasks.filter(task => task.complete === true);
+
+        res.render('list-completed', {
+            completedTasks,
+            username
+        });
+
+        // res.render('list-completed', {
+        //     tittle: "Home",
+        //     task: completedTasks,
+        //     username: username
+        // });
+        console.log(completedTasks);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+app.get('/list-completed', (req, res) => {
+    res.render('list-completed');
+});
+

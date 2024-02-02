@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/login.css">
+</head>
+
+<body>
+    <div>
+        <h1 align="center">COMPLETED</h1>
+        <div>
+            <form class="task-form">
+
+                <table>
+                    <% if (completedTasks.length> 0) { %>
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Category</th>
+                                <th>Deadline</th>
+                                <th>Priority</th>
+                            </tr>
+                        </thead>
+
+                        <% for(let i of completedTasks) { %>
+
+                            <tr draggable="true" ondragstart="start()" ondragover="dragover()">
+
+
+                                
+                                <!-- <td> <input type="checkbox" name="taskIds" value="<%= i._id %>"></td> -->
+                                <td>
+                                    <p id="task-description">
+                                        <%= i.description %>
+                                </td>
+                                <td>
+                                    <p id="task-category"></p>: <%= i.category %>
+                                </td>
+                                <td>
+                                    <p id="due-date">: <%= i.date %>
+                                    </p>
+                                </td>
+                                <td>
+                                    <p id="task-priority">: <%= i.priority %>
+                                    </p>
+                                </td>
+
+                            </tr>
+                            <% } } else {%>
+
+
+                                <tr>
+                                    <td colspan="6" align="center">No tasks to display.</td>
+                                </tr>
+
+                                <% } %>
+
+
+
+                </table>
+
+
+            </form>
+
+    </div>
+</body>
+
+</html>
