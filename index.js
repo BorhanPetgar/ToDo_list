@@ -134,7 +134,7 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/create-task', (req, res) => {
-    const { description, category, date, priority, reminder} = req.body;
+    const { description, category, date, priority, reminder } = req.body;
     // Retrieve the username from the session
     const username = req.session.username;
 
@@ -230,44 +230,44 @@ app.put('/edit-task/:id', (req, res) => {
     const id = req.params.id;
     const username = req.headers.username;
     const editedTask = req.body;
-  
+
     // Define an async function to handle the update
     const updateTask = async () => {
-      try {
-        // Find the user by username
-        const user = await User.findOne({ username });
-  
-        if (!user) {
-          return res.status(404).json({ error: 'User not found' });
+        try {
+            // Find the user by username
+            const user = await User.findOne({ username });
+
+            if (!user) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+
+            // Find the task in the user's tasks array
+            const task = user.tasks.find((task) => task._id.toString() === id);
+
+            if (!task) {
+                return res.status(404).json({ error: 'Task not found' });
+            }
+
+            // Update the task properties
+            task.description = editedTask.description;
+            task.category = editedTask.category;
+            task.deadline = editedTask.deadline;
+            task.priority = editedTask.priority;
+            task.reminder = editedTask.reminder;
+
+            // Save the updated user
+            await user.save();
+
+            res.status(200).json({ message: 'Task updated successfully' });
+        } catch (error) {
+            console.error('Error updating task:', error);
+            res.status(500).json({ error: 'Internal server error' });
         }
-  
-        // Find the task in the user's tasks array
-        const task = user.tasks.find((task) => task._id.toString() === id);
-  
-        if (!task) {
-          return res.status(404).json({ error: 'Task not found' });
-        }
-  
-        // Update the task properties
-        task.description = editedTask.description;
-        task.category = editedTask.category;
-        task.deadline = editedTask.deadline;
-        task.priority = editedTask.priority;
-        task.reminder = editedTask.reminder;
-  
-        // Save the updated user
-        await user.save();
-  
-        res.status(200).json({ message: 'Task updated successfully' });
-      } catch (error) {
-        console.error('Error updating task:', error);
-        res.status(500).json({ error: 'Internal server error' });
-      }
     };
-  
+
     // Call the async function
     updateTask();
-  });
+});
 
 app.get('/edit-task', (req, res) => {
     const taskId = req.query.id;
@@ -408,17 +408,89 @@ app.get('/tasks/:username', async (req, res) => {
     res.render('sort-tasks.ejs', { tasks, username });
 });
 
-app.put('/tasks/:taskId', (req, res) => {
-    const taskId = req.params.taskId;
-    const updatedTask = req.body;
-  
-    // Update the task in the database using Mongoose
-    Task.findByIdAndUpdate(taskId, updatedTask, { new: true }, (err, task) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Failed to update task');
-      } else {
-        res.sendStatus(200);
-      }
-    });
-  });
+// app.put('/tasks/:taskId', (req, res) => {
+//     const taskId = req.params.taskId;
+//     const updatedTask = req.body;
+
+//     // Update the task in the database using Mongoose
+//     Task.findByIdAndUpdate(taskId, updatedTask, { new: true }, (err, task) => {
+//         if (err) {
+//             console.error(err);
+//             res.status(500).send('Failed to update task');
+//         } else {
+//             res.sendStatus(200);
+//         }
+//     });
+// });
+
+
+// app.put('/edit-task/:id', (req, res) => {
+//     const id = req.params.id;
+//     const username = req.headers.username;
+//     const editedTask = req.body;
+//     console.log(id);
+
+//     // Define an async function to handle the update
+//     const updateTask = async () => {
+//         try {
+//             // Find the user by username
+//             const user = await User.findOne({ username });
+
+//             if (!user) {
+//                 return res.status(404).json({ error: 'User not found' });
+//             }
+
+//             // Find the task in the user's tasks array
+//             const task = user.tasks.find((task) => task._id.toString() === id);
+
+//             if (!task) {
+//                 return res.status(404).json({ error: 'Task not found' });
+//             }
+
+//             // Update the task properties
+//             task.description = editedTask.description;
+//             task.category = editedTask.category;
+//             task.deadline = editedTask.deadline;
+//             task.priority = editedTask.priority;
+//             task.reminder = editedTask.reminder;
+
+//             // Save the updated user
+//             await user.save();
+
+//             res.status(200).json({ message: 'Task updated successfully' });
+//         } catch (error) {
+//             console.error('Error updating task:', error);
+//             res.status(500).json({ error: 'Internal server error' });
+//         }
+//     };
+
+//     // Call the async function
+//     updateTask();
+// });
+
+app.patch('/update-task/:id', async (req, res) => {
+    try {
+        // const { taskId } = req.params;
+        const { taskId, field, value, username} = req.body;
+        console.log('update task part');
+        console.log(value);
+        // Find the task by ID
+        const user = await User.findOne({ username });
+        const task = await user.tasks.id(taskId);
+
+        if (!task) {
+            return res.status(404).json({ error: 'Task not found' });
+        }
+
+        // Update the specific field of the task
+        task[field] = value;
+
+        // Save the updated task
+        const updatedTask = await user.save();
+
+        res.json(updatedTask);
+    } catch (error) {
+        console.error('Error updating task:', error);
+        res.status(500).json({ error: 'An error occurred while updating the task' });
+    }
+});
