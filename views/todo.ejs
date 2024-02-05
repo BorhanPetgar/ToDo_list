@@ -180,6 +180,9 @@
                                 <!-- </form> -->
 
                             </td>
+                            <td>
+                                <button class="edit-button" onclick="editTask('<%= i._id %>')">✎</button>
+                            </td>
 
                         </tr>
                         <% } } else {%>
@@ -389,6 +392,60 @@
             row.parentNode.removeChild(row);
         }
 
+        function editTask(button, id, username) {
+            console.log('hi');
+            const endpoint = `/edit-task/${id}`;
+        
+            // Get the task element by its ID
+            const taskElement = button.parentNode.parentNode;
+            // Get the task description
+            const taskDescription = taskElement.querySelector('#task-description').innerText;
+            // Get the task category
+            const taskCategory = taskElement.querySelector('#task-category').innerText;
+            // Get the task deadline
+            const taskDeadline = taskElement.querySelector('#due-date').innerText;
+            // Get the task priority
+            const taskPriority = taskElement.querySelector('#task-priority').innerText;
+            // Get the task reminder
+            const taskReminder = taskElement.querySelector('#reminder').innerText;
+        
+            const editedTask = {
+                description: taskDescription,
+                category: taskCategory,
+                deadline: taskDeadline,
+                priority: taskPriority,
+                reminder: taskReminder
+            };
+        
+            // Send a PUT request to update the task
+            fetch(endpoint, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'username': username
+                    },
+                    body: JSON.stringify(editedTask)
+                })
+                .then((response) => {
+                    if (response.ok) {
+                        location.reload();
+                        fetch(`/todo/${username}`)
+                            .then((response) => response.json())
+                            .then((data) => {
+                                console.log(data);
+                            })
+                            .catch((error) => {
+                                // Handle the error if any
+                            });
+                    } else {
+                        // Handle the error if any
+                    }
+                })
+                .catch((error) => {
+                    // Handle the error if any
+                });
+        }
+
         function goToCompletedList2(username) {
             const url = '/todo/list-completed'
             window.location.href = url;
@@ -419,6 +476,7 @@
 
         }
 
+        
     </script>
 </body>
 
