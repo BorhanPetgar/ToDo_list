@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Management</title>
+    <style>
+        /* Add your custom CSS styles here */
+    </style>
+</head>
+<body>
+    <h1>Task Management</h1>
+    <form method="get" action="/tasks">
+        <label for="sort">Sort By:</label>
+        <select name="sort" id="sort">
+            <option value="category">Category</option>
+            <option value="priority">Priority</option>
+        </select>
+        <input type="submit" value="Sort">
+    </form>
+    <br>
+    <h2>Task List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Task Description</th>
+                <th>Category</th>
+                <th>Deadline</th>
+                <th>Priority</th>
+                <th>Reminder</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% tasks.forEach(function(task) { %>
+                <tr>
+                    <td><%= task.description %></td>
+                    <td><%= task.category %></td>
+                    <td><%= task.priority %></td>
+
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>

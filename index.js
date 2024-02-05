@@ -16,6 +16,8 @@ const db = 'mongodb+srv://borhan:12345@cluster0.jtvwzaf.mongodb.net/?retryWrites
 
 app.set('view engine', 'ejs');
 
+app.disable('etag');
+
 app.use(express.static('public'));
 app.use(express.static('assets'));
 app.use(express.json());
@@ -132,7 +134,7 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/create-task', (req, res) => {
-    const { description, category, date, priority } = req.body;
+    const { description, category, date, priority, reminder} = req.body;
     // Retrieve the username from the session
     const username = req.session.username;
 
@@ -151,7 +153,8 @@ app.post('/create-task', (req, res) => {
                 description: description,
                 category: category,
                 date: date,
-                priority: priority
+                priority: priority,
+                reminder: reminder
             });
 
             user.tasks.push(newTask);
@@ -307,7 +310,7 @@ app.get('/completed-tasks-list/:username', (req, res) => {
 //     res.render('completed-list');
 // });
 
-app.get('/completed-list/:username', async (req, res) => {
+app.get('/todo/list-completed/:username', async (req, res) => {
     try {
         const username = req.params.username;
         const user = await User.findOne({ username }).exec();
@@ -318,14 +321,14 @@ app.get('/completed-list/:username', async (req, res) => {
 
         const completedTasks = user.tasks.filter(task => task.complete === true);
 
-        res.render('list-completed', {
+        res.render('list', {
             completedTasks,
             username
         });
 
         // res.render('list-completed', {
         //     tittle: "Home",
-        //     task: completedTasks,
+        //     completedTasks: completedTasks,
         //     username: username
         // });
         console.log(completedTasks);
@@ -335,7 +338,29 @@ app.get('/completed-list/:username', async (req, res) => {
     }
 });
 
-app.get('/list-completed', (req, res) => {
-    res.render('list-completed');
+app.get('/todo/list-completed', (req, res) => {
+    // res.render('list-completed');
+    res.render('list', {
+        completedTasks,
+        username
+    });
 });
 
+app.get('/tasks/:username', async (req, res) => {
+    const sortOption = req.query.sort || 'category'; // Default sort option is 'category'
+    const username = req.params.username;
+    const user = await User.findOne({ username }).exec();
+
+    if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+    }
+
+    let tasks;
+    if (sortOption === 'priority') {
+        tasks = await user.tasks.sort({ priority: 1 });
+    } else {
+        tasks = await user.tasks.sort({ category: 1 });
+    }
+
+    res.render('sort-tasks.ejs', { tasks, username });
+});

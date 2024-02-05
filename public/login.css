@@ -177,6 +177,8 @@ form .signup-link a:hover {
   border: 1px solid #999999;
   border-radius: 25px;
   backdrop-filter: blur(10px);
+  border-collapse: separate;
+  border-spacing: 10px;
   /* Apply a blur effect to the background */
 }
 
@@ -347,7 +349,7 @@ body {
 .task-form {
   backdrop-filter: blur(10px);
   font-family: 'Poppins', sans-serif;
-
+  padding: 10px;
 
 }
 
@@ -411,4 +413,9 @@ body {
 .delete-button {
   width: 30px;
   height: 30px;
+}
+
+.show-tasks {
+  border-collapse: separate;
+  border-spacing: 20px;
 }

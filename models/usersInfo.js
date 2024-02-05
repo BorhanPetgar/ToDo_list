@@ -18,7 +18,21 @@ const taskSchema = new mongoose.Schema({
     }
   },
   priority: String, 
-  complete: { type: Boolean, default: false }
+  complete: { type: Boolean, default: false },
+  reminder: {
+    type: Date,
+    get: function (value) {
+      // Custom getter function to format the date as "Monday, Feb 25, 2024"
+      const options = {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      };
+
+      return value.toLocaleString(undefined, options);
+    }
+  },
 });
 
 const userSchema = new mongoose.Schema({

@@ -62,7 +62,7 @@
         <h1 align="center">TODO App</h1>
 
         <!-- Form to create a task -->
-        <form class="task-form" method="POST" action="/create-task">
+        <form class="task-form" method="POST" action="/create-task" onsubmit="return validateForm()">
             <table>
                 <thead>
                     <tr>
@@ -70,11 +70,12 @@
                         <th>Category</th>
                         <th>Date</th>
                         <th>Priority</th>
+                        <th>Reminder</th>
                         <th></th>
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="task-list">
                     <tr>
                         <td><input class="text-" type="text" name="description" placeholder="What do you need to do?"
                                 required></td>
@@ -95,6 +96,7 @@
                                 <option class="low-priority">LOW</option>
                             </select>
                         </td>
+                        <td><input class="fill-form" type="date" name="reminder"></td>
                         <td><input class="fill-form" type="submit" value="ADD TASK"></td>
                     </tr>
                 </tbody>
@@ -104,68 +106,90 @@
     <div>
         <h1 align="center">TASKS LIST</h1>
         <div>
-            <form class="task-form">
+            <form class="task-form task-table"">
 
-                <table>
-                    <% if (task.length> 0) { %>
-                        <thead>
+                <table class=" show-tasks">
+                <% if (task.length> 0) { %>
+                    <thead>
+                        <tr>
+                            <th>Done</th>
+                            <th>Task</th>
+                            <th>Category</th>
+                            <th>Deadline</th>
+                            <th>Priority</th>
+                            <th>Reminder</th>
+                            <th>Time Remaining</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <% for(let i of task) { %>
+
+                        <!-- <tr draggable=" true" ondragstart="start()" ondragover="dragover()"> -->
+                            <tr draggable="true" ondragstart="start(event)" ondragover="dragover(event)" ondrop="drop(event)">
+
+                            <td>
+
+                                <input class="tick" type="checkbox" name="taskIds" value="<%= i._id %>"
+                                    id="task-<%= i._id %>"
+                                    onchange="toggleTaskCompletion(this, '<%= i._id %>', '<%= username %>')"
+                                    <%=i.complete ? 'checked' : '' %>
+
+                            </td>
+                            <!-- <td> <input type="checkbox" name="taskIds" value="<%= i._id %>"></td> -->
+                            <td>
+                                <p id="task-description">
+                                    <%= i.description %>
+                            </td>
+                            <td>
+                                <p id="task-category"></p>: <%= i.category %>
+                            </td>
+                            <td>
+                                <p id="due-date">: <%= i.date %>
+                                </p>
+                            </td>
+                            <td>
+                                <p id="task-priority">: <%= i.priority %>
+                                </p>
+                            </td>
+                            <td>
+                                <p id="due-date">: <%= i.reminder %>
+                                </p>
+                            </td>
+
+                            <td>
+
+                                <% if (i.reminder && i.date) { const reminderDate=new Date(i.reminder); const
+                                    deadlineDate=new Date(i.date); const timeRemaining=reminderDate.getTime() - new
+                                    Date().getTime(); const daysRemaining=Math.ceil(timeRemaining / (1000 * 3600 * 24));
+                                    if (daysRemaining> 0) {
+                                    %>
+                                    <%= daysRemaining %> days remaining
+                                        <% } else if (daysRemaining==0) { %>
+                                            Deadline today
+                                            <% } else { %>
+                                                Deadline passed
+                                                <% } } %>
+
+                            </td>
+                            <td>
+                                <!-- <form action="/delete-task" method="D"> -->
+                                <button class="delete-button"
+                                    onclick="deleteTask(this, '<%= i._id %>', '<%= username %>')"
+                                    data-doc="<%= i._id %>">❌</button>
+                                <!-- </form> -->
+
+                            </td>
+
+                        </tr>
+                        <% } } else {%>
+
+
                             <tr>
-                                <th>Done</th>
-                                <th>Task</th>
-                                <th>Category</th>
-                                <th>Deadline</th>
-                                <th>Priority</th>
-                                <th></th>
+                                <td colspan="6" align="center">No tasks to display.</td>
                             </tr>
-                        </thead>
 
-                        <% for(let i of task) { %>
-
-                            <tr draggable="true" ondragstart="start()" ondragover="dragover()">
-
-
-                                <td>
-
-                                    <input class="tick" type="checkbox" name="taskIds" value="<%= i._id %>"
-                                        id="task-<%= i._id %>"
-                                        onchange="toggleTaskCompletion(this, '<%= i._id %>', '<%= username %>')"
-                                        <%=i.complete ? 'checked' : '' %>
-
-                                </td>
-                                <!-- <td> <input type="checkbox" name="taskIds" value="<%= i._id %>"></td> -->
-                                <td>
-                                    <p id="task-description">
-                                        <%= i.description %>
-                                </td>
-                                <td>
-                                    <p id="task-category"></p>: <%= i.category %>
-                                </td>
-                                <td>
-                                    <p id="due-date">: <%= i.date %>
-                                    </p>
-                                </td>
-                                <td>
-                                    <p id="task-priority">: <%= i.priority %>
-                                    </p>
-                                </td>
-                                <td>
-                                    <!-- <form action="/delete-task" method="D"> -->
-                                    <button class="delete-button"
-                                        onclick="deleteTask(this, '<%= i._id %>', '<%= username %>')"
-                                        data-doc="<%= i._id %>">❌</button>
-                                    <!-- </form> -->
-
-                                </td>
-
-                            </tr>
-                            <% } } else {%>
-
-
-                                <tr>
-                                    <td colspan="6" align="center">No tasks to display.</td>
-                                </tr>
-
-                                <% } %>
+                            <% } %>
 
 
 
@@ -177,15 +201,102 @@
         <div align="center">
             <input id="completed-tasks-history" type="submit" value="COMPLETED TASKS"
                 onclick="goToCompletedList('<%= username %>')">
-                
-
+        </div>
+        <div align="center">
+            <input id="sort-button" type="submit" value="SORT" onclick="sortTasks('<%= username %>')">
         </div>
 
     </div>
 
     <script>
 
+        function start(event) {
+            event.dataTransfer.setData("text/plain", event.target.id);
+        }
+    
+        function dragover(event) {
+            event.preventDefault();
+        }
+    
+        function drop(event) {
+            event.preventDefault();
+            const taskId = event.dataTransfer.getData("text/plain");
+            const taskList = document.getElementById("task-list");
+            const droppedRow = document.getElementById(taskId);
+            const targetRow = event.target.closest("tr");
+    
+            if (droppedRow !== targetRow) {
+                taskList.removeChild(droppedRow);
+                const droppedIndex = Array.from(taskList.children).indexOf(droppedRow);
+                const targetIndex = Array.from(taskList.children).indexOf(targetRow);
+    
+                if (droppedIndex < targetIndex) {
+                    taskList.insertBefore(droppedRow, targetRow.nextSibling);
+                } else {
+                    taskList.insertBefore(droppedRow, targetRow);
+                }
+    
+                const taskIds = Array.from(taskList.children).map(row => row.querySelector("input[name='taskIds']").value);
+                localStorage.setItem("taskOrder", JSON.stringify(taskIds));
+            }
+        }
+    
+        function restoreTaskOrder() {
+            const taskOrder = localStorage.getItem("taskOrder");
+            if (taskOrder) {
+                const taskList = document.getElementById("task-list");
+                const taskIds = JSON.parse(taskOrder);
+                taskIds.forEach(taskId => {
+                    const row = document.getElementById(taskId);
+                    if (row) {
+                        taskList.appendChild(row);
+                    }
+                });
+            }
+        }
+    
+        document.addEventListener("DOMContentLoaded", restoreTaskOrder);
 
+        function sortTasks(username) {
+            fetch(`/tasks/${username}?sort=${sortOption}`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('taskList').innerHTML = html;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+        }
+
+        function getRowClass(reminder, deadline) {
+            if (reminder && deadline) {
+                const reminderDate = new Date(reminder);
+                const deadlineDate = new Date(deadline);
+                const timeRemaining = deadlineDate.getTime() - reminderDate.getTime();
+                const daysRemaining = Math.ceil(timeRemaining / (1000 * 3600 * 24));
+
+                if (daysRemaining <= 2) {
+                    return "deadline-close";
+                }
+            }
+
+            return "";
+        }
+
+        function validateForm() {
+            var dateInput = document.querySelector('input[name="date"]');
+            var reminderInput = document.querySelector('input[name="reminder"]');
+
+            var dateValue = new Date(dateInput.value);
+            var reminderValue = new Date(reminderInput.value);
+
+            if (reminderValue < dateValue) {
+                alert("Reminder cannot be set before the deadline.");
+                return false;
+            }
+
+            return true;
+        }
 
         var row;
         var startY;
@@ -279,20 +390,20 @@
         }
 
         function goToCompletedList2(username) {
-            const url = '/completed-list'
+            const url = '/todo/list-completed'
             window.location.href = url;
         }
 
         function goToCompletedList(username) {
-            fetch(`/completed-list/${username}`)
+            fetch(`/todo/list-completed/${username}`, {
+                method: 'GET',
+            })
                 .then(response => response.json())
                 .then(data => {
-                    
-                    console.log(data);
-                   
+
+                    window.location.href = '/list';
                 })
                 .catch(error => {
-                    
                     console.error(error);
                 });
         }
@@ -305,7 +416,7 @@
                 method: 'GET',
                 headers: { "username": username }
             })
-                
+
         }
 
     </script>
