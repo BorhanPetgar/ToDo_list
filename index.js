@@ -12,7 +12,7 @@ const port = 3001
 const app = express();
 
 // connect to mongodb
-const db = 'mongodb+srv://borhan:12345@cluster0.jtvwzaf.mongodb.net/?retryWrites=true&w=majority'
+const db = // mongoDB
 
 app.set('view engine', 'ejs');
 
